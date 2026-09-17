@@ -1,16 +1,27 @@
 # InsightEngine – An End-to-End Data Engineering Platform for Business Intelligence
 
+> **Raw business data → reliable processed data → analytical warehouse → meaningful business insights**
+
+![Status](https://img.shields.io/badge/status-complete-success)
+![Python](https://img.shields.io/badge/python-3.11-blue)
+![Docker](https://img.shields.io/badge/docker-compose-2496ED)
+![Airflow](https://img.shields.io/badge/orchestration-Airflow_2.9-017CEE)
+![Spark](https://img.shields.io/badge/processing-PySpark_3.5-E25A1C)
+![Kafka](https://img.shields.io/badge/streaming-Kafka_7.6-231F20)
+![PostgreSQL](https://img.shields.io/badge/storage-PostgreSQL_16-336791)
+
+---
+
 ## Project Information
 
-**Project Title:** InsightEngine – An End-to-End Data Engineering Platform for Business Intelligence
-
-**Course:** Fundamentals of Data Engineering
-
-**Academic Year:** 2026–2027
-
-**Team:** 1
-
-**Section:** 7
+| Field | Value |
+|---|---|
+| **Project Title** | InsightEngine – An End-to-End Data Engineering Platform for Business Intelligence |
+| **Course** | Fundamentals of Data Engineering |
+| **Academic Year** | 2026–2027 |
+| **Section** | 7 |
+| **Team Size** | 3 |
+| **Guide** | Dr. N. Sirisha |
 
 ---
 
@@ -22,776 +33,592 @@
 | 2 | 2420030338 | T. Dhanya Sri |
 | 3 | 2420030405 | M. Srihitha |
 
-### Under the Guidance of:
+---
 
-**Dr. N. Sirisha**
+## 1. Project Overview
+
+Organizations generate large volumes of business data every day — customers, products, orders, payments, inventory — but raw operational data alone does not produce insights. It must be **collected, validated, cleaned, transformed, modeled, stored, and presented** in a structured, reliable form.
+
+**InsightEngine** is a Python-centric, end-to-end data engineering platform that implements the **complete data engineering lifecycle**. It demonstrates how raw business data flows through batch and streaming ingestion, layered storage, distributed processing, dimensional modeling, and warehouse loading — before being converted into interactive business intelligence through a Streamlit dashboard.
+
+The entire pipeline is orchestrated by **Apache Airflow**, allowing the complete workflow to be triggered, monitored, and reproduced from a single interface.
+
+**Current status:** ✅ **Implementation complete** — all 10 pipeline phases are built, tested, and operational end-to-end.
 
 ---
 
-# 1. Project Overview
+## 2. Problem Statement
 
-Organizations continuously generate large volumes of data from multiple sources such as customers, products, orders, payments, inventory, and other business systems.
+Traditional business data-processing workflows suffer from:
 
-However, this data may exist in different formats and locations and may contain missing values, duplicate records, inconsistent formats, and invalid information. Processing such data manually can be time-consuming, error-prone, and difficult to scale.
+- Fragmented data sources across multiple systems
+- Manual, error-prone preprocessing
+- Missing values, duplicate records, and invalid entries
+- Inconsistent formats and data types
+- Difficulty handling continuously generated (streaming) data
+- Poor scalability as data volumes grow
+- Limited visibility into data quality and pipeline health
+- Difficult, slow business analysis
 
-**InsightEngine** is designed as an end-to-end, Python-centric data engineering platform that transforms raw business data into clean, structured, reliable, and analysis-ready data.
+Raw operational data cannot be trusted or used efficiently without an automated, integrated pipeline.
 
-The project demonstrates the complete data engineering lifecycle, including data generation, data ingestion, storage, validation, cleaning, transformation, data modeling, data warehousing, workflow orchestration, and business intelligence.
-
----
-
-# 2. Why Business Intelligence?
-
-Business organizations generate large amounts of operational data every day.
-
-Examples include:
-
-- Customer information
-- Product information
-- Sales and order records
-- Payment transactions
-- Inventory information
-- Business activity records
-
-Raw operational data alone does not directly provide useful business insights.
-
-It needs to be:
-
-- Collected from different sources
-- Validated for correctness
-- Cleaned and standardized
-- Transformed into useful formats
-- Properly modeled
-- Stored for analytical processing
-- Presented through meaningful visualizations
-
-Therefore, InsightEngine focuses on building a complete data engineering pipeline that converts raw business data into reliable information for business analysis and data-driven decision-making.
+**InsightEngine addresses these problems** through a fully automated, modular, and reproducible data engineering pipeline that handles batch and streaming data, enforces data quality, builds an analytical warehouse, and presents business insights through an interactive dashboard.
 
 ---
 
-# 3. Problem Statement
+## 3. Proposed Solution — Implemented
 
-Traditional data-processing workflows often involve multiple disconnected data sources and manual preprocessing.
-
-The major problems include:
-
-- Fragmented data sources
-- Manual data processing
-- Missing values
-- Duplicate records
-- Invalid data
-- Inconsistent formats
-- Difficulty handling continuously generated data
-- Data-quality issues
-- Difficulty scaling data processing
-- Limited visibility into processed business data
-
-These problems can make business data difficult to trust and use efficiently.
-
-**InsightEngine aims to address these challenges through an automated and integrated data engineering pipeline.**
-
----
-
-# 4. Existing Situation
-
-A traditional business data-processing workflow may follow:
-
-```text
-Multiple Business Sources
-          ↓
-       Raw Data
-          ↓
-   Manual Processing
-          ↓
-    Manual Cleaning
-          ↓
-   Data Quality Issues
-          ↓
-     Data Storage
-          ↓
- Difficult Analysis
-```
-
-Traditional workflows often depend on manual processing and disconnected tools, making it difficult to maintain data quality, automate workflows, and scale the system as data volume increases.
-
----
-
-# 5. Proposed Solution
-
-InsightEngine proposes an automated end-to-end data engineering pipeline that integrates batch and streaming data processing.
-
-The proposed pipeline follows:
+InsightEngine implements the following end-to-end pipeline:
 
 ```text
 Business Data Sources
-          ↓
-     Data Generation
-          ↓
-     Data Ingestion
-       ┌───────┐
-       │       │
-     Batch   Streaming
-      CSV      Kafka
-       │       │
-       └───┬───┘
-           ↓
-      PostgreSQL
-           ↓
- Data Validation & Cleaning
-           ↓
-        PySpark
-           ↓
- Data Transformation
-           ↓
-      Data Modeling
-       Star Schema
-           ↓
-     Data Warehouse
-           ↓
-       Streamlit
-        Dashboard
-           ↓
-    Business Insights
+        ↓
+Python Data Generation        (5 entities, ~257k rows)
+        ↓
+Data Ingestion
+   ┌────────────┐
+   │            │
+ Batch       Streaming
+  CSV         Kafka
+   │            │
+   └─────┬──────┘
+         ↓
+PostgreSQL Raw Storage        (audit-logged loads)
+         ↓
+Data Validation & Cleaning    (1.75% rows rejected, tracked)
+         ↓
+PySpark Processing            (6 Spark jobs, Parquet output)
+         ↓
+Data Modeling — Star Schema   (5 dims + 2 fact tables)
+         ↓
+PostgreSQL Data Warehouse     (7 analytics views)
+         ↓
+Business Analytics            (Python insights layer)
+         ↓
+Streamlit Dashboard           (interactive BI)
+         ↓
+Business Insights
 ```
 
-**Apache Airflow** will be used to orchestrate and automate the complete pipeline.
+**Apache Airflow** orchestrates the entire pipeline as a single DAG — 8 tasks, end-to-end runtime ≈ **60 seconds**.
 
 ---
 
-# 6. Objectives
+## 4. Objectives — All Achieved
 
-The main objectives of InsightEngine are:
-
-* To collect business data from multiple sources.
-* To implement batch and streaming data ingestion.
-* To build an automated end-to-end data engineering pipeline.
-* To identify and handle missing, duplicate, invalid, and inconsistent data.
-* To perform data validation and cleaning.
-* To process and transform data using PySpark.
-* To implement structured data modeling using a star schema.
-* To store processed data in a data warehouse.
-* To automate pipeline execution using Apache Airflow.
-* To provide an interactive dashboard for business analysis.
-* To generate reliable and meaningful business insights from processed data.
-
----
-
-# 7. Technologies Used
-
-| Technology         | Purpose                                        |
-| ------------------ | ---------------------------------------------- |
-| **Python**         | Core development and data processing           |
-| **Pandas**         | Data manipulation and preprocessing            |
-| **PostgreSQL**     | Raw and operational data storage               |
-| **Apache Kafka**   | Streaming data ingestion                       |
-| **Apache PySpark** | Distributed data processing and transformation |
-| **Apache Airflow** | Workflow orchestration and automation          |
-| **Streamlit**      | Interactive business intelligence dashboard    |
-| **SQL**            | Data querying and analysis                     |
-| **Git**            | Version control                                |
-| **GitHub**         | Collaboration and repository management        |
+| # | Objective | Status |
+|---|---|---|
+| 1 | Collect/generate business data from multiple sources | ✅ |
+| 2 | Implement batch and streaming ingestion | ✅ |
+| 3 | Build an automated end-to-end pipeline | ✅ |
+| 4 | Identify and handle missing, duplicate, invalid data | ✅ |
+| 5 | Perform data validation and cleaning | ✅ |
+| 6 | Process and transform data using PySpark | ✅ |
+| 7 | Implement star-schema data modeling | ✅ |
+| 8 | Store processed data in a data warehouse | ✅ |
+| 9 | Automate pipeline execution using Airflow | ✅ |
+| 10 | Provide an interactive dashboard | ✅ |
+| 11 | Generate reliable business insights | ✅ |
 
 ---
 
-# 8. System Architecture
+## 5. Technology Stack
 
-The proposed system architecture consists of multiple stages that collectively implement the data engineering lifecycle.
+| Technology | Purpose | Version |
+|---|---|---|
+| **Python** | Core development, generation, orchestration logic | 3.11 |
+| **Pandas** | Data manipulation, preprocessing, validation | 2.2 |
+| **PostgreSQL** | Raw storage, warehouse, Airflow metadata | 16 |
+| **Apache Kafka** | Streaming ingestion (KRaft mode) | 7.6 |
+| **Apache Spark (PySpark)** | Distributed transformation & processing | 3.5 |
+| **Apache Airflow** | Workflow orchestration & scheduling | 2.9 |
+| **Streamlit** | Interactive BI dashboard | 1.40 |
+| **Plotly** | Interactive visualizations | 5.24 |
+| **SQLAlchemy** | Database access layer | 1.4 |
+| **Docker / Docker Compose** | Containerized infrastructure | latest |
+| **Git / GitHub** | Version control & collaboration | — |
+
+---
+
+## 6. System Architecture
+
+The system is organized into **layered stages** — each with a single responsibility, clear inputs and outputs, and independent testability.
 
 ```text
                     ┌─────────────────────┐
                     │    DATA SOURCES     │
                     │ Customer / Product  │
                     │ Orders / Payments   │
+                    │     Inventory       │
                     └──────────┬──────────┘
                                ↓
                     ┌─────────────────────┐
                     │  DATA GENERATION    │
-                    │       Python        │
+                    │  Python (Faker)     │
                     └──────────┬──────────┘
                                ↓
                     ┌─────────────────────┐
                     │   DATA INGESTION    │
-                    └──────────┬──────────┘
-                               ↓
-                    ┌─────────────────────┐
-                    │ Batch │  Streaming  │
-                    │  CSV   │   Kafka    │
+                    │  Batch  │ Streaming │
+                    │  CSV    │  Kafka    │
                     └──────────┬──────────┘
                                ↓
                     ┌─────────────────────┐
                     │     PostgreSQL      │
-                    │   Raw Data Storage  │
+                    │   RAW Storage       │
+                    │ (6 tables + logs)   │
                     └──────────┬──────────┘
                                ↓
                     ┌─────────────────────┐
-                    │ DATA VALIDATION &   │
-                    │     CLEANING        │
+                    │ VALIDATION &        │
+                    │ CLEANING            │
+                    │ (split clean/reject)│
                     └──────────┬──────────┘
                                ↓
                     ┌─────────────────────┐
                     │      PySpark        │
-                    │ Transformation &    │
-                    │     Processing      │
+                    │  6 Transform Jobs   │
+                    │  Parquet Output     │
                     └──────────┬──────────┘
                                ↓
                     ┌─────────────────────┐
                     │   DATA MODELING     │
                     │    Star Schema      │
+                    │  5 Dims + 2 Facts   │
                     └──────────┬──────────┘
                                ↓
                     ┌─────────────────────┐
                     │   DATA WAREHOUSE    │
+                    │  7 Analytics Views  │
+                    └──────────┬──────────┘
+                               ↓
+                    ┌─────────────────────┐
+                    │  BUSINESS ANALYTICS │
+                    │  Python Insights    │
                     └──────────┬──────────┘
                                ↓
                     ┌─────────────────────┐
                     │     Streamlit       │
-                    │      Dashboard      │
+                    │     Dashboard       │
                     └──────────┬──────────┘
                                ↓
                     ┌─────────────────────┐
-                    │ BUSINESS INSIGHTS   │
+                    │  BUSINESS INSIGHTS  │
                     └─────────────────────┘
 
-              Apache Airflow
-         Orchestrates the Pipeline
+                    Apache Airflow
+              (Orchestrates the Entire Pipeline)
 ```
 
 ---
 
-# 9. System Workflow
-
-The proposed InsightEngine workflow is:
-
-```text
-Start
-  ↓
-Generate / Collect Business Data
-  ↓
-Batch / Streaming Ingestion
-  ↓
-Store Raw Data
-  ↓
-Validate Data
-  ↓
-Clean Data
-  ↓
-Transform Data using PySpark
-  ↓
-Apply Data Modeling
-  ↓
-Load Data Warehouse
-  ↓
-Generate Business Analytics
-  ↓
-Display Insights on Streamlit Dashboard
-  ↓
-End
-```
-
-Apache Airflow will coordinate the execution of different pipeline stages.
-
----
-
-# 10. Data Sources
-
-InsightEngine can work with multiple types of business data sources.
-
-Examples include:
-
-* Customer data
-* Product data
-* Order data
-* Sales data
-* Payment data
-* Inventory data
-
-The project can use generated or sample datasets for demonstrating the complete data engineering workflow.
-
----
-
-# 11. Data Ingestion
-
-Data ingestion is responsible for collecting data from different sources and transferring it into the processing pipeline.
-
-InsightEngine supports two ingestion approaches.
-
-## Batch Ingestion
-
-Batch data can be collected from CSV files and processed periodically.
-
-```text
-CSV Files
-   ↓
-Python / Pandas
-   ↓
-PostgreSQL
-```
-
-## Streaming Ingestion
-
-Continuously generated data can be transmitted using Apache Kafka.
-
-```text
-Data Producer
-     ↓
-Apache Kafka
-     ↓
-Kafka Consumer
-     ↓
-PostgreSQL
-```
-
-This allows the platform to demonstrate both batch and streaming data ingestion.
-
----
-
-# 12. Data Storage
-
-PostgreSQL will be used for storing raw and processed business data.
-
-The storage layer helps maintain structured data that can be accessed by downstream processing components.
-
-The data may be organized into:
-
-* Raw data tables
-* Cleaned data tables
-* Transformed data tables
-* Analytical tables
-
----
-
-# 13. Data Validation and Cleaning
-
-Before analytical processing, the data will be checked for common quality problems.
-
-The platform will identify and handle:
-
-* Missing values
-* Duplicate records
-* Invalid values
-* Incorrect data types
-* Inconsistent formats
-* Out-of-range values
-* Null or incomplete records
-
-The objective is to ensure that only reliable and validated data moves to the transformation stage.
-
----
-
-# 14. Data Transformation
-
-PySpark will be used for data transformation and processing.
-
-Typical transformations may include:
-
-* Filtering unnecessary records
-* Handling missing values
-* Removing duplicates
-* Standardizing formats
-* Converting data types
-* Aggregating business data
-* Joining related datasets
-* Creating derived attributes
-
-The transformed data will be prepared for analytical processing and data warehousing.
-
----
-
-# 15. Data Modeling
-
-InsightEngine will use a **Star Schema** for analytical data modeling.
-
-A typical model may contain:
-
-```text
-                 ┌─────────────────┐
-                 │ Customer Dim    │
-                 └────────┬────────┘
-                          │
-                          ↓
-┌─────────────────┐  ┌───────────────┐  ┌─────────────────┐
-│ Product Dim     │→ │ Sales Fact    │← │ Date Dim        │
-└─────────────────┘  └───────────────┘  └─────────────────┘
-                          ↑
-                          │
-                   ┌──────┴──────┐
-                   │ Store Dim   │
-                   └─────────────┘
-```
-
-The fact table will contain measurable business events, while dimension tables will provide descriptive information.
-
----
-
-# 16. Data Warehouse
-
-The transformed and modeled data will be loaded into an analytical data warehouse layer.
-
-The data warehouse will provide structured and optimized data for:
-
-* Business reporting
-* Analytical queries
-* Aggregations
-* Trend analysis
-* Dashboard generation
-* Decision support
-
----
-
-# 17. Workflow Orchestration
-
-Apache Airflow will be used to automate and coordinate the different stages of the pipeline.
-
-The workflow can be represented as:
-
-```text
-Data Generation
-      ↓
-Data Ingestion
-      ↓
-Data Validation
-      ↓
-Data Cleaning
-      ↓
-PySpark Transformation
-      ↓
-Data Modeling
-      ↓
-Data Warehouse Loading
-      ↓
-Dashboard Update
-```
-
-Airflow will manage task dependencies, scheduling, monitoring, and pipeline execution.
-
----
-
-# 18. Business Intelligence Dashboard
-
-Streamlit will be used to develop an interactive dashboard for presenting processed business data.
-
-The dashboard may provide:
-
-* Total sales
-* Total orders
-* Revenue trends
-* Product performance
-* Customer analysis
-* Inventory-related insights
-* Category-wise analysis
-* Time-based trends
-* Key performance indicators
-
-The dashboard will convert processed data into understandable visual information for business users.
-
----
-
-# 19. Expected Benefits
-
-InsightEngine is expected to provide the following benefits:
-
-* Automated data processing
-* Improved data quality
-* Integration of multiple data sources
-* Support for batch and streaming ingestion
-* Scalable data processing
-* Reduced manual preprocessing
-* Structured analytical data
-* Automated workflow execution
-* Interactive business visualization
-* Faster access to business insights
-
----
-
-# 20. Repository Structure
-
-The project repository follows the required structure:
+## 7. Repository Structure
 
 ```text
 InsightEngine/
 │
-├── src/
-│   ├── ingestion/
-│   ├── validation/
-│   ├── transformation/
-│   ├── modeling/
-│   └── dashboard/
+├── docker-compose.yml              # 8 services: 3× PostgreSQL, Kafka, Spark master + worker, Airflow
+├── .env                            # configuration (never committed)
+├── .gitignore
+├── README.md
+├── requirements.txt                # host-side Python dependencies
 │
-├── docs/
-│   ├── architecture/
-│   └── literature-survey/
+├── data/                           # data landing zone (gitignored)
+│   ├── raw/                        # generated CSVs
+│   ├── processed/                  # validated clean + rejected CSVs
+│   └── warehouse/                  # (reserved)
 │
-├── data/
-│   ├── raw/
-│   └── processed/
+├── generators/                     # Phase 1 — synthetic data generation
+│   ├── config.py
+│   ├── generate_customers.py
+│   ├── generate_products.py
+│   ├── generate_orders.py
+│   ├── generate_payments.py
+│   ├── generate_inventory.py
+│   └── run_all.py
 │
-├── results/
+├── ingestion/                      # Phases 2 & 4 — batch + streaming
+│   ├── batch/
+│   │   ├── raw_schema.sql
+│   │   └── load_to_raw.py
+│   └── streaming/
+│       ├── common.py
+│       ├── stream_schema.sql
+│       ├── producer.py
+│       └── consumer.py
 │
-├── reports/
+├── validation/                     # Phase 3 — data quality
+│   ├── rules.py
+│   └── validate_raw.py
 │
-└── README.md
+├── processing/                     # Phase 5 — PySpark transformations
+│   └── spark_jobs/
+│       ├── spark_session.py
+│       ├── transform_customers.py
+│       ├── transform_products.py
+│       ├── transform_orders.py
+│       ├── transform_order_items.py
+│       ├── transform_payments.py
+│       ├── transform_inventory.py
+│       └── run_all.py
+│
+├── warehouse/                      # Phase 6 — star schema
+│   ├── schema.sql
+│   └── load_warehouse.py
+│
+├── airflow/                        # Phase 7 — orchestration
+│   ├── Dockerfile                  # custom image: PySpark + Java + project deps
+│   ├── requirements.txt
+│   └── dags/
+│       └── insightengine_dag.py
+│
+├── analytics/                      # Phase 8 — business insights
+│   ├── insights.py
+│   └── queries.sql
+│
+├── dashboard/                      # Phase 9 — Streamlit BI
+│   └── app.py
+│
+└── docs/                           # Phase 10 — documentation
+    ├── architecture.md
+    ├── data_dictionary.md
+    └── demo_script.md
 ```
 
 ---
 
-# 21. Setup Instructions
+## 8. Data Pipeline — Stage by Stage
 
-## Prerequisites
+### Stage 1 — Data Generation
+Python + Faker generate realistic business data across **5 entities**:
 
-The following tools and technologies are required:
+| Entity | Rows Generated | Rows After Validation |
+|---|---:|---:|
+| Customers | 5,000 | 5,000 |
+| Products | 500 | 496 |
+| Orders | 50,250 | 49,667 |
+| Order Items | 152,357 | 149,208 |
+| Payments | 47,811 | 47,027 |
+| Inventory | 1,703 | 1,703 |
+| **Total** | **257,621** | **253,101** |
 
-* Python 3.x
-* PostgreSQL
-* Apache Kafka
-* Apache PySpark
-* Apache Airflow
-* Streamlit
-* Pandas
-* Git
+Realistic imperfections are intentionally injected (nulls, negative prices, duplicates, invalid statuses) to give the validation layer genuine work.
 
-## Clone the Repository
+### Stage 2 — Batch Ingestion
+Pandas + PostgreSQL `COPY` load each CSV into `raw.*` tables. Every load is recorded in `raw.ingestion_metadata` for auditability.
+
+### Stage 3 — Data Validation & Cleaning
+Rule-based validation splits each table into **clean** and **rejected** records:
+
+| Table | Clean | Rejected | Rejection % |
+|---|---:|---:|---:|
+| customers | 5,000 | 0 | 0% |
+| products | 496 | 4 | 0.80% |
+| orders | 49,667 | 583 | 1.16% |
+| order_items | 149,208 | 3,149 | 2.07% |
+| payments | 47,027 | 784 | 1.64% |
+| inventory | 1,703 | 0 | 0% |
+| **Total** | **253,101** | **4,520** | **1.75%** |
+
+Results are logged to `raw.validation_metadata`.
+
+### Stage 4 — Streaming Ingestion (Kafka)
+A producer publishes order events to the `orders_stream` Kafka topic. A consumer subscribes and writes them into `raw.orders_stream` with idempotent upserts on `order_id`. Stream metadata (`kafka_partition`, `kafka_offset`, `ingested_at`) is captured for lineage.
+
+### Stage 5 — PySpark Transformations
+Six Spark jobs read the clean CSVs, apply joins, aggregations, and derived-column logic, and write **Parquet** output for warehouse ingestion:
+
+- **Customers** — full name, signup year/month, tenure in days
+- **Products** — margin amount & %, price band (budget / mid / premium)
+- **Orders** — enriched with customer segment, country, city; derived date parts, weekend flag
+- **Order Items** — joined to products; revenue per line
+- **Payments** — payment delay in hours, success flag, delay bucket
+- **Inventory** — stock status (out_of_stock / low / healthy), reorder flag
+
+### Stage 6 — Star Schema Modeling
+The warehouse Postgres instance (`insightengine_dw`) holds:
+
+**Dimension tables**
+- `dim_customers`
+- `dim_products`
+- `dim_date` (generated calendar, YYYYMMDD key)
+- `dim_payments`
+- `dim_inventory`
+
+**Fact tables**
+- `fact_orders` — one row per order (order-level grain)
+- `fact_order_items` — one row per order line (line-level grain)
+
+Surrogate keys are assigned during load; foreign keys link facts to dimensions.
+
+### Stage 7 — Analytics Views
+Seven SQL views sit on top of the warehouse and power the dashboard:
+
+- `v_daily_revenue`
+- `v_monthly_revenue`
+- `v_top_products`
+- `v_category_performance`
+- `v_customer_segments`
+- `v_payment_success`
+- `v_inventory_health`
+
+### Stage 8 — Business Analytics Layer
+`analytics/insights.py` exposes typed Python functions (e.g., `daily_revenue()`, `top_products()`, `headline_kpis()`) that query the views and return pandas DataFrames — providing a clean data-access layer for the dashboard.
+
+### Stage 9 — Streamlit Dashboard
+A four-page interactive BI dashboard:
+
+| Page | What it shows |
+|---|---|
+| **Overview** | Headline KPIs, daily & monthly revenue trends, category performance |
+| **Customers** | Segment analysis, geographic distribution, revenue per customer |
+| **Products** | Top sellers, category margins, volume vs revenue |
+| **Operations** | Payment methods, delay distribution, inventory health |
+
+All charts are interactive (Plotly). Data is cached for 60 seconds for responsiveness.
+
+### Stage 10 — Airflow Orchestration
+A single DAG (`insightengine_pipeline`) chains all 8 stages sequentially:
+
+```
+01_generate_data  →  02_load_to_raw  →  03_validate_raw  →  04_stream_orders
+   →  05_spark_transforms  →  06_load_warehouse  →  07_apply_views  →  08_verify_counts
+```
+
+- **Schedule:** `@daily`
+- **Retries:** 1 per task, 2-minute delay
+- **Runtime:** ≈ 60 seconds end-to-end
+- **Monitoring:** Full Airflow UI at `http://localhost:8080`
+
+---
+
+## 9. Data Model
+
+```text
+                        ┌───────────────────┐
+                        │  dim_customers    │
+                        └─────────┬─────────┘
+                                  │
+                                  │
+┌───────────────────┐   ┌─────────▼──────────┐   ┌───────────────────┐
+│  dim_products     │──▶│   fact_orders      │◀──│   dim_date        │
+└─────────┬─────────┘   └─────────┬──────────┘   └───────────────────┘
+          │                       │
+          │                       │
+          │             ┌─────────▼──────────┐
+          │             │ fact_order_items   │
+          │             └─────────┬──────────┘
+          │                       │
+┌─────────▼─────────┐   ┌─────────▼──────────┐
+│  dim_inventory    │   │   dim_payments     │
+└───────────────────┘   └────────────────────┘
+```
+
+Facts store **measurable events**; dimensions store **descriptive context**.
+
+---
+
+## 10. Setup Instructions
+
+### Prerequisites
+
+- **Docker Desktop** (with WSL 2 backend on Windows)
+- **Python 3.11+**
+- **~6 GB free RAM** for all containers
+- **Git**
+
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/vaishu-rgb/KLH-CSE-2026-27-FDE1-InsightEngine.git
 cd KLH-CSE-2026-27-FDE1-InsightEngine
 ```
 
-## Create a Virtual Environment
+### 2. Configure Environment
+
+Copy the sample environment and fill in values:
 
 ```bash
-python -m venv venv
+cp .env.example .env
 ```
 
-### Windows
+The `.env` holds database credentials, ports, and Kafka config. **Never commit `.env`** — it is already in `.gitignore`.
+
+### 3. Start All Services
 
 ```bash
-venv\Scripts\activate
+docker compose up -d
 ```
 
-### Linux / macOS
+This brings up **8 containers**:
+
+| Service | Purpose | Host Port |
+|---|---|---|
+| `postgres-raw` | Raw data layer | 5432 |
+| `postgres-dw` | Data warehouse | 5433 |
+| `postgres-airflow` | Airflow metadata | 5434 |
+| `kafka` | Streaming broker | 29092 |
+| `spark` | Spark master (UI) | 8081 |
+| `spark-worker` | Spark worker | — |
+| `airflow-webserver` | Airflow UI | 8080 |
+| `airflow-scheduler` | Airflow scheduler | — |
+
+### 4. Install Local Python Dependencies
 
 ```bash
-source venv/bin/activate
+pip install -r requirements.txt
 ```
 
-## Install Dependencies
+### 5. Access the Interfaces
 
-Install the required Python packages using:
+| Interface | URL | Credentials |
+|---|---|---|
+| Airflow UI | http://localhost:8080 | `admin` / `admin` |
+| Spark Master UI | http://localhost:8081 | — |
+| Streamlit Dashboard | http://localhost:8501 | — |
+
+---
+
+## 11. Execution Instructions
+
+### Option A — Automated (recommended)
+
+Trigger the full pipeline from Airflow:
+
+1. Open http://localhost:8080 → login `admin` / `admin`
+2. Unpause the `insightengine_pipeline` DAG
+3. Click **▶ Trigger DAG**
+4. Watch all 8 tasks complete in ~60 seconds
+
+Or via CLI:
 
 ```bash
-pip install pandas psycopg2-binary pyspark streamlit kafka-python apache-airflow
+docker exec -it ie_airflow_scheduler airflow dags trigger insightengine_pipeline
 ```
 
-Additional dependencies can be added to a `requirements.txt` file as the project develops.
-
-## Configure PostgreSQL
-
-1. Install PostgreSQL.
-2. Create the required database.
-3. Configure the database connection.
-4. Create the required raw and analytical tables.
-
-Database credentials should be stored securely using environment variables and must not be committed to GitHub.
-
----
-
-# 22. Execution Instructions
-
-The proposed execution flow of InsightEngine is:
-
-```text
-Start
-  ↓
-Generate Business Data
-  ↓
-Batch / Streaming Data Ingestion
-  ↓
-Store Raw Data in PostgreSQL
-  ↓
-Data Validation
-  ↓
-Data Cleaning
-  ↓
-PySpark Transformation
-  ↓
-Data Modeling
-  ↓
-Load Data Warehouse
-  ↓
-Run Analytical Queries
-  ↓
-Launch Streamlit Dashboard
-  ↓
-View Business Insights
-  ↓
-End
-```
-
-## Run the Data Pipeline
-
-The individual pipeline components will be executed according to their dependencies.
-
-Example:
+### Option B — Manual, step by step
 
 ```bash
-python src/ingestion/batch_ingestion.py
+python -m generators.run_all             # 1. Generate synthetic data
+python -m ingestion.batch.load_to_raw    # 2. Load raw CSVs → Postgres
+python -m validation.validate_raw        # 3. Validate & clean
+python -m ingestion.streaming.producer   # 4. Stream orders to Kafka
+python -m ingestion.streaming.consumer   #    Consume → raw.orders_stream
+# 5. PySpark transformations
+docker exec -it -e PYTHONPATH=/opt/insightengine ie_spark \
+    /opt/spark/bin/spark-submit \
+    /opt/insightengine/processing/spark_jobs/run_all.py
+python -m warehouse.load_warehouse       # 6. Build star-schema warehouse
 ```
+
+### Option C — Launch the Dashboard
 
 ```bash
-python src/validation/data_validation.py
+python -m streamlit run dashboard/app.py
 ```
 
-```bash
-python src/transformation/pyspark_transformation.py
-```
-
-## Run the Streamlit Dashboard
-
-```bash
-streamlit run src/dashboard/app.py
-```
-
-The exact execution commands will be updated as the implementation progresses.
+Opens at http://localhost:8501.
 
 ---
 
-# 23. Current Phase Status
+## 12. Key Results
 
-**Current Phase:** Review 1 – Project Proposal and Literature Survey
+After a full pipeline run:
 
-## Completed
+| Metric | Value |
+|---|---:|
+| Rows generated | 257,621 |
+| Rows passed validation | 253,101 (98.25%) |
+| Rows rejected (tracked) | 4,520 (1.75%) |
+| Streaming events ingested | 1,000 |
+| Warehouse dimension rows | 54,229 |
+| Warehouse fact rows | 198,875 |
+| Analytics views | 7 |
+| Airflow tasks per run | 8 |
+| End-to-end runtime | ≈ 60 seconds |
 
-* Project topic finalized
-* Problem statement prepared
-* Project objectives defined
-* Proposed solution designed
-* System architecture designed
-* Technology stack identified
-* Literature survey prepared
-* Review 1 PPT prepared
-* GitHub repository created
-* Required repository folders created
-* Initial README documentation prepared
-
-## In Progress
-
-* Data source planning
-* Dataset preparation
-* Data generation
-* Pipeline implementation
-* Batch ingestion implementation
-* Streaming ingestion planning
-* Data validation and cleaning implementation
-
-## Planned
-
-* Complete batch ingestion pipeline
-* Implement Kafka streaming ingestion
-* Implement PySpark transformations
-* Implement data-quality checks
-* Implement star-schema data modeling
-* Build data warehouse layer
-* Implement Apache Airflow orchestration
-* Develop Streamlit dashboard
-* Perform testing and evaluation
-* Generate final project report
-* Prepare final presentation and demonstration
-
-The README will be updated progressively as each component is implemented and tested.
+**Business KPIs produced by the dashboard:**
+- Total revenue, total orders, unique customers, product count, average order value
+- Daily and monthly revenue trends
+- Category-level performance with margins
+- Customer segment & country analysis
+- Payment method distribution and delay buckets
+- Inventory health with reorder alerts
 
 ---
 
-# 24. Future Scope
+## 13. Implementation Status
 
-Future improvements to InsightEngine may include:
+| Phase | Component | Status |
+|---|---|---|
+| 0 | Docker infrastructure (8 services) | ✅ Complete |
+| 1 | Synthetic data generation | ✅ Complete |
+| 2 | Batch ingestion → raw Postgres | ✅ Complete |
+| 3 | Data validation & preprocessing | ✅ Complete |
+| 4 | Kafka streaming ingestion | ✅ Complete |
+| 5 | PySpark transformations | ✅ Complete |
+| 6 | Star-schema data warehouse | ✅ Complete |
+| 7 | Airflow orchestration | ✅ Complete |
+| 8 | Business analytics layer | ✅ Complete |
+| 9 | Streamlit dashboard | ✅ Complete |
+| 10 | Documentation | ✅ Complete |
 
-* Real-time business analytics
-* Advanced data-quality monitoring
-* Cloud-based deployment
-* Machine learning integration
-* Predictive business analytics
-* Advanced anomaly detection
-* Scalable distributed storage
-* Automated data-quality alerts
-* Integration with additional data sources
-* Advanced dashboard and reporting capabilities
-
----
-
-# 25. Conclusion
-
-InsightEngine aims to demonstrate the complete data engineering lifecycle by integrating data generation, ingestion, storage, validation, cleaning, transformation, modeling, orchestration, data warehousing, and business intelligence into a unified platform.
-
-The project combines Python with technologies such as PostgreSQL, Apache Kafka, PySpark, Apache Airflow, and Streamlit to create an automated and modular data engineering pipeline.
-
-The proposed system will transform raw business data into reliable, structured, and meaningful information that can support business analysis and data-driven decision-making.
+**The pipeline runs end-to-end and is fully reproducible.**
 
 ---
 
-# Team Contributions
+## 14. Data Security
 
-Each team member will contribute to the project using their own GitHub account.
+The repository **does not** and **will not** contain:
 
-Progressive and meaningful commits will be maintained throughout the project so that individual contributions can be verified from the GitHub commit history.
+- Passwords or API keys
+- Database credentials
+- Authentication tokens
+- Confidential institutional data
+- Licensed datasets without permission
 
-The team will maintain at least one meaningful commit per week as required by the project guidelines.
-
----
-
-# Project Deliverables
-
-The project will be developed and submitted progressively through different project phases.
-
-Phase deliverables will be tagged appropriately in the GitHub repository.
-
-Example tags:
-
-```text
-review-1
-review-2
-final
-```
+Sensitive configuration is managed through `.env` files, which are excluded from version control via `.gitignore`.
 
 ---
 
-# Data Security
+## 15. Future Scope
 
-The repository will not contain sensitive or confidential information.
+Potential improvements building on the current platform:
 
-The following information must not be uploaded to GitHub:
-
-* Passwords
-* API keys
-* Database credentials
-* Authentication tokens
-* Confidential institutional data
-* Licensed datasets without permission
-
-Sensitive configuration information will be maintained securely using environment variables or appropriate configuration methods.
-
----
-
-# Repository Guidelines
-
-The repository will be maintained throughout the full duration of the project.
-
-The repository URL will remain unchanged after being recorded for project submission.
-
-The repository will remain accessible to the project supervisor and Course Coordinator until the final project evaluation is completed.
-
-All team members are expected to contribute through their own GitHub accounts so that individual contributions remain verifiable.
+- Real-time streaming analytics (integrate Kafka → Spark Streaming → warehouse)
+- Cloud deployment (AWS / GCP managed Postgres, MSK, EMR, MWAA)
+- Machine learning integration (churn prediction, demand forecasting)
+- Advanced data-quality monitoring and automated alerts
+- Anomaly detection on order patterns and payment failures
+- Additional data sources (web analytics, CRM, support tickets)
+- Data catalogs and lineage tracking
+- CI/CD for DAG deployments and pipeline tests
+- Predictive dashboards embedded in the Streamlit UI
 
 ---
 
-# Project Repository
+## 16. Conclusion
 
-**GitHub Repository:**
-[https://github.com/vaishu-rgb/KLH-CSE-2026-27-FDE1-InsightEngine](https://github.com/vaishu-rgb/KLH-CSE-2026-27-FDE1-InsightEngine)
+**InsightEngine** demonstrates the complete data engineering lifecycle in a single, reproducible, Python-centric platform. It combines Python, PostgreSQL, Apache Kafka, PySpark, Apache Airflow, and Streamlit to build an automated and modular pipeline that transforms raw business data into reliable, structured, and meaningful information.
+
+Every stage is **idempotent, observable, and independently testable**, and the entire workflow is **orchestrated from a single Airflow DAG**. The project shows not only that a pipeline can work, but *how* each layer — ingestion, storage, validation, processing, modeling, warehousing, analytics, and presentation — contributes to turning raw operational data into trustworthy business insight.
 
 ---
 
-# Acknowledgement
+## 17. Acknowledgement
 
 This project is developed as part of the **Fundamentals of Data Engineering** course for the academic year **2026–2027**.
 
 The team acknowledges the guidance and support provided by **Dr. N. Sirisha** throughout the project development process.
+
+---
+
+## Project Repository
+
+**GitHub:** [https://github.com/vaishu-rgb/KLH-CSE-2026-27-FDE1-InsightEngine](https://github.com/vaishu-rgb/KLH-CSE-2026-27-FDE1-InsightEngine)
+
+---
+
+## License
+
+MIT — free to learn from, fork, and extend.
